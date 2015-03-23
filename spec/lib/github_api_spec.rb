@@ -181,59 +181,59 @@ describe GithubApi do
 
       expect(request).to have_been_requested
     end
+  end
 
-    describe "#pull_request_comments" do
-      it "returns comments added to pull request" do
-        hound_token = ENV["HOUND_GITHUB_TOKEN"]
-        api = GithubApi.new(hound_token)
-        pull_request = double("PullRequest", full_repo_name: full_repo_name)
-        pull_request_id = 253
-        commit_sha = "abc253"
-        expected_comment = "inline if's and while's are not violations?"
-        stub_pull_request_comments_request(
-          pull_request.full_repo_name,
-          pull_request_id
-        )
-        stub_contents_request(
-          repo_name: pull_request.full_repo_name,
-          sha: commit_sha
-        )
-
-        comments = api.pull_request_comments(
-          pull_request.full_repo_name,
-          pull_request_id
-        )
-
-        expect(comments.size).to eq(4)
-        expect(comments.first.body).to eq expected_comment
-      end
-    end
-
-    describe "#accept_pending_invitations" do
-      it "finds and accepts pending org invitations" do
-        hound_token = ENV["HOUND_GITHUB_TOKEN"]
-        api = GithubApi.new(hound_token)
-        memberships_request = stub_memberships_request
-        membership_update_request = stub_membership_update_request
-
-        api.accept_pending_invitations
-
-        expect(memberships_request).to have_been_requested
-        expect(membership_update_request).to have_been_requested
-      end
-    end
-
-    it "returns user's teams" do
-      teams = ["thoughtbot"]
-      client = double(user_teams: teams)
-      allow(Octokit::Client).to receive(:new).and_return(client)
+  describe "#pull_request_comments" do
+    it "returns comments added to pull request" do
       hound_token = ENV["HOUND_GITHUB_TOKEN"]
       api = GithubApi.new(hound_token)
+      pull_request = double("PullRequest", full_repo_name: full_repo_name)
+      pull_request_id = 253
+      commit_sha = "abc253"
+      expected_comment = "inline if's and while's are not violations?"
+      stub_pull_request_comments_request(
+        pull_request.full_repo_name,
+        pull_request_id
+      )
+      stub_contents_request(
+        repo_name: pull_request.full_repo_name,
+        sha: commit_sha
+      )
 
-      user_teams = api.user_teams
+      comments = api.pull_request_comments(
+        pull_request.full_repo_name,
+        pull_request_id
+      )
 
-      expect(user_teams).to eq teams
+      expect(comments.size).to eq(4)
+      expect(comments.first.body).to eq expected_comment
     end
+  end
+
+  describe "#accept_pending_invitations" do
+    it "finds and accepts pending org invitations" do
+      hound_token = ENV["HOUND_GITHUB_TOKEN"]
+      api = GithubApi.new(hound_token)
+      memberships_request = stub_memberships_request
+      membership_update_request = stub_membership_update_request
+
+      api.accept_pending_invitations
+
+      expect(memberships_request).to have_been_requested
+      expect(membership_update_request).to have_been_requested
+    end
+  end
+
+  it "returns user's teams" do
+    teams = ["thoughtbot"]
+    client = double(user_teams: teams)
+    allow(Octokit::Client).to receive(:new).and_return(client)
+    hound_token = ENV["HOUND_GITHUB_TOKEN"]
+    api = GithubApi.new(hound_token)
+
+    user_teams = api.user_teams
+
+    expect(user_teams).to eq teams
   end
 
   describe "#create_pending_status" do
@@ -257,7 +257,6 @@ describe GithubApi do
         sha = "abc"
         hound_token = ENV["HOUND_GITHUB_TOKEN"]
         api = GithubApi.new(hound_token)
-        repo_name = "test/repo"
         stub_failed_status_creation_request(
           full_repo_name,
           sha,
